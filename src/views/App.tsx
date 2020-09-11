@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes } from "./routes";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider, CssBaseline } from "@material-ui/core";
 import { theme } from "../lib/theme";
 import {
   ApolloProvider,
@@ -49,6 +49,7 @@ function App() {
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
           <BrowserRouter>
+            <CssBaseline />
             <Routes />
           </BrowserRouter>
         </ThemeProvider>
