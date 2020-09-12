@@ -38,7 +38,7 @@ const client = new ApolloClient({
       });
     }),
     new HttpLink({
-      uri: "https://pros-and-cons.herokuapp.com/",
+      uri: "https://pros-and-cons.herokuapp.com/graphql",
     }),
   ]),
 });
