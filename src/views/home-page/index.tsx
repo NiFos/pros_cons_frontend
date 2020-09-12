@@ -49,7 +49,7 @@ export function HomePage(props: Props) {
   };
 
   React.useEffect(() => {
-    if (!meData.loading && !meData.error && meData.data) {
+    if (!meData.loading && !meData.error && meData.data && meData.data.Me) {
       history.push("/list");
     }
   });
