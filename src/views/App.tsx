@@ -18,7 +18,7 @@ const client = new ApolloClient({
     new ApolloLink((operation, forward) => {
       operation.setContext({
         headers: {
-          authtorization: localStorage.getItem("authorization"),
+          authorization: localStorage.getItem("authorization"),
           refreshToken: localStorage.getItem("refreshToken"),
         },
       });
