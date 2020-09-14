@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Container,
   Grid,
@@ -8,10 +8,15 @@ import {
   Button,
   makeStyles,
   List,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogContent,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
+import { postMutation } from "../../graphql/mutations/post.mutation";
 import { userQuery } from "../../graphql/queries/user.query";
 import { logoutUser } from "../../lib/auth";
 
@@ -32,23 +37,57 @@ const useStyles = makeStyles({
   list: {
     marginTop: "20px",
   },
+  dialog: {
+    padding: "10px",
+  },
 });
 
 interface Props {}
 
 export function ListPage(props: Props) {
   const meData = useQuery(userQuery.ME);
+  const [createPost] = useMutation(postMutation.CREATE_POST);
   const history = useHistory();
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [title, setTitle] = React.useState("");
+
   const renderData =
     !meData.loading && !meData.error && meData.data && meData.data.Me;
+
   const logoutHandler = async () => {
     logoutUser();
     meData.client.clearStore();
     history.push("/");
   };
+
+  const createHandler = async () => {
+    setOpen(false);
+    const createdPost = await createPost({
+      variables: {
+        title,
+      },
+    });
+    history.push(`/post/${createdPost.data.CreatePost}`);
+  };
+
   return (
     <Container>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        className={classes.dialog}
+      >
+        <DialogContent>
+          <DialogTitle>Enter name for new table</DialogTitle>
+          <TextField
+            autoFocus
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <Button onClick={createHandler}>Create</Button>
+        </DialogContent>
+      </Dialog>
       <Grid container xs={10} className={classes.grid}>
         <Grid item xs={10}>
           <Paper className={classes.paper}>
@@ -56,7 +95,11 @@ export function ListPage(props: Props) {
               <div className={classes.user}>
                 <Typography variant={"h6"}>{meData.data.Me.email}</Typography>
                 <div>
-                  <Button size={"medium"} startIcon={<AddIcon />}>
+                  <Button
+                    size={"medium"}
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpen(true)}
+                  >
                     Add
                   </Button>
                   <Button onClick={logoutHandler}>Logout</Button>
