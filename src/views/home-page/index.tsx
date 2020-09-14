@@ -91,7 +91,14 @@ export function HomePage(props: Props) {
                 </Button>
               </ListItem>
               <ListItem>
-                <Button color="primary">Create without registration</Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    history.push("/create");
+                  }}
+                >
+                  Create without registration
+                </Button>
               </ListItem>
             </List>
           </Grid>
