@@ -37,6 +37,9 @@ const useStyles = makeStyles({
   list: {
     marginTop: "20px",
   },
+  tableItem: {
+    display: "block",
+  },
   dialog: {
     padding: "10px",
   },
@@ -117,7 +120,14 @@ export function ListPage(props: Props) {
               {meData.data.Me.posts && meData.data.Me.posts.length > 0 && (
                 <List className={classes.paper}>
                   {meData.data.Me.posts.map((item: any) => {
-                    return <Link to={`table/${item.id}`}>{item.title}</Link>;
+                    return (
+                      <Link
+                        to={`post/${item.id}`}
+                        className={classes.tableItem}
+                      >
+                        {item.title}
+                      </Link>
+                    );
                   })}
                 </List>
               )}
