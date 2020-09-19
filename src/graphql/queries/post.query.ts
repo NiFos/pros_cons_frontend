@@ -7,6 +7,7 @@ export const postQuery = {
         id
         title
         data {
+          id
           pros
           title
         }

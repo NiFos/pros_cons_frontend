@@ -11,7 +11,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
   makeStyles,
   Paper,
   TextField,
@@ -59,6 +58,7 @@ const useStyles = makeStyles({
 });
 
 interface IDataItem {
+  id: string;
   focused: boolean;
   title: string;
   pros: boolean;
@@ -121,11 +121,13 @@ function CreatePageComponent(props: Props) {
           focused: false,
           title: "Pros 1",
           pros: true,
+          id: "0",
         },
         {
           focused: false,
           title: "Cons 1",
           pros: false,
+          id: "1",
         },
       ]);
     }
@@ -146,47 +148,40 @@ function CreatePageComponent(props: Props) {
   };
 
   const focusedHandler = (item: IDataItem, focused: boolean) => {
-    const index = data.findIndex(
-      (dataItem: any) =>
-        dataItem.title === item.title && dataItem.pros === item.pros
-    );
+    const index = data.findIndex((dataItem: any) => dataItem.id === item.id);
     let newData: any = [...data];
     newData[index].focused = focused;
 
     setData([...data]);
   };
 
-  const itemTitleChangeHandler = (item: IDataItem, title: string) => {
+  const itemTitleChangeHandler = async (item: IDataItem, title: string) => {
     focusedHandler(item, false);
     let newData: any = [...data];
-    const index = newData.findIndex(
-      (dataItem: any) =>
-        dataItem.title === item.title && dataItem.pros === item.pros
-    );
-    const oldTitle = newData[index].title;
+    const index = newData.findIndex((dataItem: any) => dataItem.id === item.id);
     newData[index].title = title;
-    setData([...data]);
     if (online) {
       if (item.new) {
         delete item.new;
-        addData({
+        const response = await addData({
           variables: {
-            id: postId,
+            postId,
             pros: item.pros,
             title: item.title,
           },
         });
+        newData[index].id = response.data.AddPostData;
       } else {
         updateData({
           variables: {
             postId,
-            dataTitle: oldTitle,
-            pros: item.pros,
+            dataId: item.id,
             newDataTitle: title,
           },
         });
       }
     }
+    setData([...data]);
   };
 
   const addHandler = (pros: boolean) => {
@@ -196,6 +191,7 @@ function CreatePageComponent(props: Props) {
       pros,
       focused: true,
       new: true,
+      id: `${newData.length + 1}`,
     });
 
     setData(newData);
@@ -213,16 +209,13 @@ function CreatePageComponent(props: Props) {
 
   const deletePostData = async (item: IDataItem) => {
     const newData = [...data];
-    const index = newData.findIndex(
-      (el) => el.title === item.title && el.pros === item.pros
-    );
+    const index = newData.findIndex((el) => el.id === item.id);
     newData.splice(index, 1);
     if (online) {
       removeData({
         variables: {
           postId,
-          dataTitle: item.title,
-          pros: item.pros,
+          dataId: item.id,
         },
       });
     }

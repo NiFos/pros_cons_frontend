@@ -12,32 +12,26 @@ export const postMutation = {
     }
   `,
   ADD_POST_DATA: gql`
-    mutation AddPostData($id: String, $pros: Boolean, $title: String) {
-      AddPostData(id: $id, pros: $pros, title: $title)
+    mutation AddPostData($postId: String, $pros: Boolean, $title: String) {
+      AddPostData(postId: $postId, pros: $pros, title: $title)
     }
   `,
   UPDATE_POST_DATA: gql`
     mutation UpdatePostData(
       $postId: String
-      $dataTitle: String
-      $pros: Boolean
+      $dataId: String
       $newDataTitle: String
     ) {
       UpdatePostData(
         postId: $postId
-        dataTitle: $dataTitle
-        pros: $pros
+        dataId: $dataId
         newDataTitle: $newDataTitle
       )
     }
   `,
   REMOVE_POST_DATA: gql`
-    mutation RemovePostData(
-      $postId: String
-      $dataTitle: String
-      $pros: Boolean
-    ) {
-      RemovePostData(postId: $postId, dataTitle: $dataTitle, pros: $pros)
+    mutation RemovePostData($postId: String, $dataId: String) {
+      RemovePostData(postId: $postId, dataId: $dataId)
     }
   `,
   DELETE_POST: gql`
