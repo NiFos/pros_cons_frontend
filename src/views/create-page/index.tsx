@@ -51,6 +51,11 @@ const useStyles = makeStyles({
   dialog: {
     padding: "10px",
   },
+  item: {
+    display: "flex",
+    justifyContent: "space-between",
+    borderBottom: "1px solid black",
+  },
 });
 
 interface IDataItem {
@@ -229,7 +234,7 @@ function CreatePageComponent(props: Props) {
     return renderData.map((item: IDataItem, index) => {
       if (item.pros === pros) {
         return (
-          <ListItem key={item.title + index}>
+          <ListItem key={item.title + index} className={classes.item}>
             {item.focused ? (
               <TextField
                 defaultValue={item.title}
@@ -237,14 +242,14 @@ function CreatePageComponent(props: Props) {
                 autoFocus
               />
             ) : (
-              <div>
+              <>
                 <Typography onClick={() => focusedHandler(item, true)}>
                   {item.title}
                 </Typography>
                 <IconButton onClick={() => deletePostData(item)}>
                   <HighlightOffIcon />
                 </IconButton>
-              </div>
+              </>
             )}
           </ListItem>
         );
@@ -262,14 +267,20 @@ function CreatePageComponent(props: Props) {
         <DialogContent>
           <DialogTitle>Delete table</DialogTitle>
           <DialogContentText>Are you sure?</DialogContentText>
-          <Button onClick={deleteHandler}>Delete</Button>
+          <Button
+            variant={"contained"}
+            color={"secondary"}
+            onClick={deleteHandler}
+          >
+            Delete
+          </Button>
         </DialogContent>
       </Dialog>
       {postData.loading ? (
         <CircularProgress />
       ) : (
-        <Grid container xs={10} className={classes.grid}>
-          <Grid item xs={10}>
+        <Grid container xs={12} lg={10} className={classes.grid}>
+          <Grid item xs={12} lg={10}>
             <Paper className={classes.paper}>
               <div className={classes.header}>
                 <IconButton onClick={() => history.push("/list")}>
@@ -315,7 +326,7 @@ function CreatePageComponent(props: Props) {
               </div>
             </Paper>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6} lg={5}>
             <Paper className={classes.paper}>
               <List>
                 <ListItem>
@@ -333,7 +344,7 @@ function CreatePageComponent(props: Props) {
               </List>
             </Paper>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6} lg={5}>
             <Paper className={classes.paper}>
               <List>
                 <ListItem>

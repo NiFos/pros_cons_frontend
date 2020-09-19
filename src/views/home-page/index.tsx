@@ -18,9 +18,11 @@ import { userQuery } from "../../graphql/queries/user.query";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
-  grid: {
+  marginAuto: {
     margin: "0 auto",
-    width: "60%",
+  },
+  textAlign: {
+    textAlign: "center",
   },
   signInColumn: {
     paddingTop: "50%",
@@ -55,13 +57,13 @@ export function HomePage(props: Props) {
   });
   return (
     <Container>
-      <Grid container spacing={3} xs={8} className={classes.grid}>
-        <Grid item={true} xs={12}>
+      <Grid container spacing={3} xs={12} lg={8} className={classes.marginAuto}>
+        <Grid item={true} xs={12} lg={8} className={classes.marginAuto}>
           <Typography variant={"h2"} align={"center"}>
             Pros & cons
           </Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} lg={6} className={classes.marginAuto}>
           <List>
             <ListItem>
               <ListItemText>Why you should use it?</ListItemText>
@@ -79,7 +81,12 @@ export function HomePage(props: Props) {
         {meData.loading ? (
           <CircularProgress />
         ) : (
-          <Grid item={true} xs={6} className={classes.signInColumn}>
+          <Grid
+            item={true}
+            xs={12}
+            lg={6}
+            className={[classes.signInColumn, classes.marginAuto].join(" ")}
+          >
             <List>
               <ListItem>
                 <Button

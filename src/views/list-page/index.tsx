@@ -91,8 +91,8 @@ export function ListPage(props: Props) {
           <Button onClick={createHandler}>Create</Button>
         </DialogContent>
       </Dialog>
-      <Grid container xs={10} className={classes.grid}>
-        <Grid item xs={10}>
+      <Grid container xs={12} lg={10} className={classes.grid}>
+        <Grid item xs={12} lg={10}>
           <Paper className={classes.paper}>
             {renderData ? (
               <div className={classes.user}>
@@ -114,7 +114,7 @@ export function ListPage(props: Props) {
           </Paper>
         </Grid>
         {renderData ? (
-          <Grid item={true} xs={10} className={classes.list}>
+          <Grid item={true} xs={12} lg={10} className={classes.list}>
             <Paper className={classes.paper}>
               <Typography variant={"h6"}>Your tables</Typography>
               {meData.data.Me.posts && meData.data.Me.posts.length > 0 && (
@@ -125,7 +125,7 @@ export function ListPage(props: Props) {
                         to={`post/${item.id}`}
                         className={classes.tableItem}
                       >
-                        {item.title}
+                        <Typography variant={"button"}>{item.title}</Typography>
                       </Link>
                     );
                   })}
