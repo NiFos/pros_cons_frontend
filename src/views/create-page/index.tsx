@@ -1,32 +1,18 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import {
-  Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Grid,
-  IconButton,
-  List,
-  ListItem,
   makeStyles,
-  Paper,
-  TextField,
-  Typography,
 } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import SaveIcon from "@material-ui/icons/Save";
-import AddIcon from "@material-ui/icons/Add";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import React from "react";
 import { RouteComponentProps, useHistory, withRouter } from "react-router-dom";
 import { IS_LOGGED_IN } from "../../components/private-route";
 import { postQuery } from "../../graphql/queries/post.query";
 import { postMutation } from "../../graphql/mutations/post.mutation";
+import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
+import { CreatePageHeader } from "./CreatePageHeader";
+import { CreatePageList } from "./CreatePageList";
 
 const useStyles = makeStyles({
   grid: {
@@ -50,14 +36,24 @@ const useStyles = makeStyles({
   dialog: {
     padding: "10px",
   },
-  item: {
-    display: "flex",
-    justifyContent: "space-between",
-    borderBottom: "1px solid black",
-  },
 });
 
-interface IDataItem {
+const defaultDataValues = [
+  {
+    focused: false,
+    title: "Pros 1",
+    pros: true,
+    id: "0",
+  },
+  {
+    focused: false,
+    title: "Cons 1",
+    pros: false,
+    id: "1",
+  },
+];
+
+export interface IDataItem {
   id: string;
   focused: boolean;
   title: string;
@@ -90,8 +86,6 @@ function CreatePageComponent(props: Props) {
   const [titleFocused, setTitleFocused] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [data, setData] = React.useState<IDataItem[]>([]);
-  const [prosCount, setProsCount] = React.useState(0);
-  const [consCount, setConsCount] = React.useState(0);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
   React.useEffect(() => {
@@ -102,13 +96,14 @@ function CreatePageComponent(props: Props) {
         },
       });
     }
-  }, [postId]);
+  }, [getPostData, isLoggedInData.data.isLoggedIn, postId]);
 
   React.useEffect(() => {
     if (postData.data) {
       setTitle(postData.data.Post.title);
       setData(
         postData.data.Post.data.map((item: IDataItem) => ({
+          id: item.id,
           focused: false,
           title: item.title,
           pros: item.pros,
@@ -116,28 +111,9 @@ function CreatePageComponent(props: Props) {
       );
     } else {
       setTitle(`Your's table name`);
-      setData([
-        {
-          focused: false,
-          title: "Pros 1",
-          pros: true,
-          id: "0",
-        },
-        {
-          focused: false,
-          title: "Cons 1",
-          pros: false,
-          id: "1",
-        },
-      ]);
+      setData(defaultDataValues);
     }
   }, [postData]);
-
-  React.useEffect(() => {
-    const pros = data.filter((item) => item.pros === true);
-    setProsCount(pros.length);
-    setConsCount(data.length - pros.length);
-  }, [data]);
 
   const saveTitleHandler = () => {
     setTitleFocused(false);
@@ -222,139 +198,44 @@ function CreatePageComponent(props: Props) {
     setData(newData);
   };
 
-  const renderItems = (pros: boolean) => {
-    const renderData: any[] = data;
-    return renderData.map((item: IDataItem, index) => {
-      if (item.pros === pros) {
-        return (
-          <ListItem key={item.title + index} className={classes.item}>
-            {item.focused ? (
-              <TextField
-                defaultValue={item.title}
-                onBlur={(e) => itemTitleChangeHandler(item, e.target.value)}
-                autoFocus
-              />
-            ) : (
-              <>
-                <Typography onClick={() => focusedHandler(item, true)}>
-                  {item.title}
-                </Typography>
-                <IconButton onClick={() => deletePostData(item)}>
-                  <HighlightOffIcon />
-                </IconButton>
-              </>
-            )}
-          </ListItem>
-        );
-      }
-    });
-  };
-
   return (
     <Container>
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        className={classes.dialog}
-      >
-        <DialogContent>
-          <DialogTitle>Delete table</DialogTitle>
-          <DialogContentText>Are you sure?</DialogContentText>
-          <Button
-            variant={"contained"}
-            color={"secondary"}
-            onClick={deleteHandler}
-          >
-            Delete
-          </Button>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDeleteDialog
+        deleteHandler={deleteHandler}
+        openDeleteDialog={openDeleteDialog}
+        setOpenDeleteDialog={setOpenDeleteDialog}
+      />
       {postData.loading ? (
         <CircularProgress />
       ) : (
         <Grid container xs={12} lg={10} className={classes.grid}>
-          <Grid item xs={12} lg={10}>
-            <Paper className={classes.paper}>
-              <div className={classes.header}>
-                <IconButton onClick={() => history.push("/list")}>
-                  <ArrowBackIcon />
-                </IconButton>
-                {titleFocused ? (
-                  <div className={classes.title}>
-                    <TextField
-                      fullWidth
-                      className={classes.textField}
-                      placeholder={"Title"}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                    <Button startIcon={<SaveIcon />} onClick={saveTitleHandler}>
-                      Save
-                    </Button>
-                  </div>
-                ) : (
-                  <div className={classes.title}>
-                    <Typography variant={"h6"}>{title}</Typography>
-                    <IconButton
-                      onClick={() => {
-                        setTitleFocused(true);
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </div>
-                )}
-                <div style={{ display: "flex" }}>
-                  {(deletePostStatus.loading ||
-                    updateDataStatus.loading ||
-                    addDataStatus.loading ||
-                    removeDataStatus.loading ||
-                    updateTitleStatus.loading) && <CircularProgress />}
-                  {isLoggedInData.data.isLoggedIn && (
-                    <Button startIcon={<DeleteIcon />} onClick={deleteHandler}>
-                      Delete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} lg={5}>
-            <Paper className={classes.paper}>
-              <List>
-                <ListItem>
-                  <Typography variant={"h6"}>Pros - {prosCount}</Typography>
-                </ListItem>
-                {renderItems(true)}
-                <ListItem>
-                  <Button
-                    startIcon={<AddIcon />}
-                    onClick={() => addHandler(true)}
-                  >
-                    Add to pros
-                  </Button>
-                </ListItem>
-              </List>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} lg={5}>
-            <Paper className={classes.paper}>
-              <List>
-                <ListItem>
-                  <Typography variant={"h6"}>Cons - {consCount}</Typography>
-                </ListItem>
-                {renderItems(false)}
-                <ListItem>
-                  <Button
-                    startIcon={<AddIcon />}
-                    onClick={() => addHandler(false)}
-                  >
-                    Add to pros
-                  </Button>
-                </ListItem>
-              </List>
-            </Paper>
-          </Grid>
+          {/* Header */}
+          <CreatePageHeader
+            loading={
+              deletePostStatus.loading ||
+              updateDataStatus.loading ||
+              addDataStatus.loading ||
+              removeDataStatus.loading ||
+              updateTitleStatus.loading
+            }
+            classes={classes}
+            saveTitleHandler={saveTitleHandler}
+            isLoggedIn={isLoggedInData.data.isLoggedIn}
+            deleteHandler={deleteHandler}
+            setTitle={setTitle}
+            setTitleFocused={setTitleFocused}
+            title={title}
+            titleFocused={titleFocused}
+          />
+          {/* List */}
+          <CreatePageList
+            classes={classes}
+            data={data}
+            deletePostData={deletePostData}
+            focusedHandler={focusedHandler}
+            itemTitleChangeHandler={itemTitleChangeHandler}
+            addHandler={addHandler}
+          />
         </Grid>
       )}
     </Container>
