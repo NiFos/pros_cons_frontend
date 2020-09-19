@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
-const IS_LOGGED_IN = gql`
+export const IS_LOGGED_IN = gql`
   query IsLoggedIn {
     isLoggedIn @client
   }
