@@ -49,7 +49,7 @@ export function HomePage(props: Props) {
   };
 
   React.useEffect(() => {
-    if (!meData.loading && !meData.error && meData.data) {
+    if (!meData.loading && !meData.error && meData.data && meData.data.Me) {
       history.push("/list");
     }
   });
@@ -91,7 +91,14 @@ export function HomePage(props: Props) {
                 </Button>
               </ListItem>
               <ListItem>
-                <Button color="primary">Create without registration</Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    history.push("/create");
+                  }}
+                >
+                  Create without registration
+                </Button>
               </ListItem>
             </List>
           </Grid>

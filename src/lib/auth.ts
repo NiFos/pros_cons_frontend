@@ -9,3 +9,8 @@ export const authWithOauth = (queryString: string) => {
     localStorage.setItem("refreshToken", refreshToken);
   }
 };
+
+export const logoutUser = () => {
+  localStorage.removeItem("authorization");
+  localStorage.removeItem("refreshToken");
+};

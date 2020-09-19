@@ -9,16 +9,32 @@ import {
   InMemoryCache,
   ApolloLink,
   HttpLink,
+  NormalizedCacheObject,
+  gql,
 } from "@apollo/client";
 
-const cache = new InMemoryCache();
-const client = new ApolloClient({
+export const typeDefs = gql`
+  extend type Query {
+    isLoggedIn: Boolean!
+  }
+`;
+
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        isLoggedIn: () => !!localStorage.getItem("authorization"),
+      },
+    },
+  },
+});
+const client = new ApolloClient<NormalizedCacheObject>({
   cache,
   link: ApolloLink.from([
     new ApolloLink((operation, forward) => {
       operation.setContext({
         headers: {
-          authtorization: localStorage.getItem("authorization"),
+          authorization: localStorage.getItem("authorization"),
           refreshToken: localStorage.getItem("refreshToken"),
         },
       });
